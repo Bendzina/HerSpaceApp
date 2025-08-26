@@ -1,12 +1,12 @@
-import { ThemeProvider } from './app/ThemeContext';
-import { LanguageProvider } from './app/LanguageContext';
-import { Slot } from 'expo-router';
+import { Stack } from "expo-router";
+import { ThemeProvider } from "./app/ThemeContext";
+import { LanguageProvider } from "./app/LanguageContext";
 
-export default function App() {
+export default function RootLayout() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <Slot />
+        <Stack screenOptions={{ headerShown: false }} />
       </LanguageProvider>
     </ThemeProvider>
   );

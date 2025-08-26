@@ -1,36 +1,90 @@
-import type { StackNavigationProp } from '@react-navigation/stack';
+// app/(tabs)/index.tsx
 import React from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTheme } from '../ThemeContext';
+import { useLanguage } from '../LanguageContext';
+
 const { width, height } = Dimensions.get('window');
 
-type RootStackParamList = {
-  Welcome: undefined;
-  Profile: undefined;
+// Translation types
+type TranslationKeys = 'welcomeTitle' | 'welcomeDescription' | 'getStarted' | 'settings';
+type Translations = Record<'en' | 'ka', Record<TranslationKeys, string>>;
+
+// translations ობიექტი
+const translations: Translations = {
+  en: {
+    welcomeTitle: 'Welcome to Your Safe Space',
+    welcomeDescription: 'A sanctuary for your emotional well-being. Let\'s begin your journey to inner peace.',
+    getStarted: 'Get Started',
+    settings: 'Settings',
+  },
+  ka: {
+    welcomeTitle: 'მოგესალმებით თქვენს უსაფრთხო სივრცეში',
+    welcomeDescription: 'თქვენი ემოციური კეთილდღეობის თავშესაფარი. დავიწყოთ თქვენი მოგზაურობა შინაგან სიმშვიდისკენ.',
+    getStarted: 'დაიწყეთ',
+    settings: 'პარამეტრები',
+  },
 };
-
-type WelcomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Welcome'>;
-
-type Props = {
-  navigation: WelcomeScreenNavigationProp;
-};
-
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const { isDark } = useTheme();
+  const { language } = useLanguage();
+
+  // Safe access to translations with proper typing
+  const currentTranslations = translations[language] || translations.en;
+
+  // Dynamic styles based on theme
+  const containerStyle = [
+    styles.container,
+    { backgroundColor: isDark ? '#1a1a1a' : '#f8f6f3' }
+  ];
+
+  const titleStyle = [
+    styles.title,
+    { color: isDark ? '#ffffff' : '#2c2c2c' }
+  ];
+
+  const descriptionStyle = [
+    styles.description,
+    { color: isDark ? '#cccccc' : '#666666' }
+  ];
+
+  const settingsButtonStyle = [
+    styles.settingsButton,
+    { backgroundColor: isDark ? '#2c2c2c' : '#ffffff' }
+  ];
+
+  const settingsTextStyle = [
+    styles.settingsText,
+    { color: isDark ? '#ffffff' : '#8b5fbf' }
+  ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView style={containerStyle} contentContainerStyle={styles.contentContainer}>
+      {/* Settings Button */}
+      <TouchableOpacity 
+        style={settingsButtonStyle}
+        onPress={() => router.push('/AppPreferencesScreen')}
+        activeOpacity={0.7}
+      >
+        <Text style={settingsTextStyle}>⚙️ {currentTranslations.settings}</Text>
+      </TouchableOpacity>
+
       {/* Illustration Area */}
       <View style={styles.illustrationContainer}>
         {/* Background Circle */}
-        <View style={styles.backgroundCircle} />
+        <View style={[
+          styles.backgroundCircle,
+          { backgroundColor: isDark ? '#2c2c2c' : '#f5f1eb' }
+        ]} />
         
         {/* Decorative Plants */}
-        <View style={styles.leftPlant1} />
-        <View style={styles.leftPlant2} />
-        <View style={styles.rightPlant1} />
-        <View style={styles.rightPlant2} />
+        <View style={[styles.leftPlant1, { backgroundColor: isDark ? '#4a6b5a' : '#2d5a3d' }]} />
+        <View style={[styles.leftPlant2, { backgroundColor: isDark ? '#5a7b6a' : '#3a6b4a' }]} />
+        <View style={[styles.rightPlant1, { backgroundColor: isDark ? '#4a6b5a' : '#2d5a3d' }]} />
+        <View style={[styles.rightPlant2, { backgroundColor: isDark ? '#5a7b6a' : '#3a6b4a' }]} />
         
         {/* Small decorative flowers */}
         <View style={styles.flower1} />
@@ -47,21 +101,21 @@ export default function WelcomeScreen() {
 
       {/* Content Section */}
       <View style={styles.contentSection}>
-        <Text style={styles.title}>Welcome to Your Safe Space</Text>
-        <Text style={styles.description}>
-        A sanctuary for your emotional well-being. Let's begin your journey to inner peace.
-      </Text>
+        <Text style={titleStyle}>{currentTranslations.welcomeTitle}</Text>
+        <Text style={descriptionStyle}>
+          {currentTranslations.welcomeDescription}
+        </Text>
       </View>
 
       {/* Button Section */}
       <View style={styles.buttonSection}>
         <TouchableOpacity
-        style={styles.getStartedButton}
-        onPress={() => router.push('/ProfileScreen')}
-       >
-         <Text style={styles.getStartedText}>Get Started</Text>
-         </TouchableOpacity>
-          </View>
+          style={styles.getStartedButton}
+          onPress={() => router.push('/ProfileScreen')}
+        >
+          <Text style={styles.getStartedText}>{currentTranslations.getStarted}</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -69,25 +123,39 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f6f3',
   },
   contentContainer: {
     minHeight: height,
     paddingHorizontal: 30,
     paddingBottom: 50,
+    paddingTop: 50,
+  },
+  settingsButton: {
+    alignSelf: 'flex-end',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginBottom: 20,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  settingsText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   illustrationContainer: {
-    height: height * 0.55,
+    height: height * 0.45,
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 60,
+    marginTop: 20,
   },
   backgroundCircle: {
     width: width * 0.6,
     height: width * 0.6,
     borderRadius: width * 0.3,
-    backgroundColor: '#f5f1eb',
     position: 'absolute',
     zIndex: 1,
   },
@@ -98,7 +166,6 @@ const styles = StyleSheet.create({
     top: '20%',
     width: 80,
     height: 120,
-    backgroundColor: '#2d5a3d',
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     borderBottomLeftRadius: 20,
@@ -112,7 +179,6 @@ const styles = StyleSheet.create({
     top: '45%',
     width: 60,
     height: 90,
-    backgroundColor: '#3a6b4a',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     borderBottomLeftRadius: 15,
@@ -127,7 +193,6 @@ const styles = StyleSheet.create({
     top: '15%',
     width: 70,
     height: 110,
-    backgroundColor: '#2d5a3d',
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
     borderBottomLeftRadius: 17,
@@ -141,7 +206,6 @@ const styles = StyleSheet.create({
     top: '50%',
     width: 55,
     height: 85,
-    backgroundColor: '#3a6b4a',
     borderTopLeftRadius: 27,
     borderTopRightRadius: 27,
     borderBottomLeftRadius: 13,
@@ -214,23 +278,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '700',
-    color: '#2c2c2c',
     textAlign: 'center',
     marginBottom: 20,
     letterSpacing: -0.5,
+    lineHeight: 34,
   },
   description: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#666666',
     textAlign: 'center',
     paddingHorizontal: 10,
     fontWeight: '400',
   },
   buttonSection: {
-    marginTop: 60,
+    marginTop: 50,
     alignItems: 'center',
   },
   getStartedButton: {

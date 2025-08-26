@@ -2,16 +2,20 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTheme } from './ThemeContext';
+import { useLanguage } from './LanguageContext';
 
 export default function ProfileScreen() {
   const [image, setImage] = useState<string | null>(null);
   const router = useRouter();
+  const { isDark, colors } = useTheme();
+  const { t } = useLanguage();
 
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
     if (!permissionResult.granted) {
-      alert('Permission to access gallery is required!');
+      alert(t.profile.permissionRequired);
       return;
     }
 
@@ -27,11 +31,13 @@ export default function ProfileScreen() {
     }
   };
 
+  const styles = createStyles(colors, isDark);
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
+        <Text style={styles.headerTitle}>{t.profile.title}</Text>
         <TouchableOpacity 
           style={styles.settingsIconButton}
           onPress={() => router.push('/SettingsScreen')}
@@ -44,63 +50,88 @@ export default function ProfileScreen() {
 
       {/* Profile Info */}
       <View style={styles.profileInfo}>
-        <TouchableOpacity onPress={pickImage}>
+        <TouchableOpacity onPress={pickImage} style={styles.avatarContainer}>
           {image ? (
             <Image source={{ uri: image }} style={styles.avatar} />
           ) : (
-            <View style={styles.avatar} />
+            <View style={styles.avatar}>
+              <Text style={styles.avatarPlaceholder}>👤</Text>
+            </View>
           )}
         </TouchableOpacity>
-        <Text style={styles.name}>Sophia Carter</Text>
-        <Text style={styles.subtitle}>Mindful Journey</Text>
-        <Text style={styles.subtitle}>Joined 2022</Text>
+        <Text style={styles.name}>{t.profile.userName}</Text>
+        <Text style={styles.subtitle}>{t.profile.subtitle}</Text>
+        <Text style={styles.subtitle}>{t.profile.joined}</Text>
       </View>
 
       {/* Stats */}
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
           <Text style={styles.statNumber}>14</Text>
-          <Text style={styles.statLabel}>Day Streak</Text>
+          <Text style={styles.statLabel}>{t.profile.dayStreak}</Text>
         </View>
         <View style={styles.statBox}>
           <Text style={styles.statNumber}>32</Text>
-          <Text style={styles.statLabel}>Rituals Completed</Text>
+          <Text style={styles.statLabel}>{t.profile.ritualsCompleted}</Text>
         </View>
         <View style={styles.statBox}>
           <Text style={styles.statNumber}>28</Text>
-          <Text style={styles.statLabel}>Journal Entries</Text>
+          <Text style={styles.statLabel}>{t.profile.journalEntries}</Text>
         </View>
       </View>
 
       {/* Settings */}
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionHeaderText}>Settings</Text>
+        <Text style={styles.sectionHeaderText}>{t.profile.settings}</Text>
       </View>
 
       {/* Settings Items */}
-      <View style={styles.settingsItem}>
-        <View style={styles.iconPlaceholder} />
-        <Text style={styles.settingsLabel}>Notifications</Text>
-        <View style={styles.switchPlaceholder} />
-      </View>
-      <View style={styles.settingsItem}>
-        <View style={styles.iconPlaceholder} />
-        <Text style={styles.settingsLabel}>Account Management</Text>
-        <View style={styles.arrowPlaceholder} />
-      </View>
-      <View style={styles.settingsItem}>
-        <View style={styles.iconPlaceholder} />
-        <Text style={styles.settingsLabel}>Help & Support</Text>
-        <View style={styles.arrowPlaceholder} />
-      </View>
+      <TouchableOpacity 
+        style={styles.settingsItem}
+        onPress={() => router.push('/NotificationsScreen')}
+      >
+        <View style={[styles.iconPlaceholder, styles.notificationIcon]}>
+          <Text style={styles.iconText}>🔔</Text>
+        </View>
+        <Text style={styles.settingsLabel}>{t.profile.notifications}</Text>
+        <View style={styles.arrowPlaceholder}>
+          <Text style={styles.arrowText}>›</Text>
+        </View>
+      </TouchableOpacity>
+      
+      <TouchableOpacity 
+        style={styles.settingsItem}
+        onPress={() => router.push('/PasswordScreen')}
+      >
+        <View style={[styles.iconPlaceholder, styles.accountIcon]}>
+          <Text style={styles.iconText}>🔒</Text>
+        </View>
+        <Text style={styles.settingsLabel}>{t.profile.accountManagement}</Text>
+        <View style={styles.arrowPlaceholder}>
+          <Text style={styles.arrowText}>›</Text>
+        </View>
+      </TouchableOpacity>
+      
+      <TouchableOpacity 
+        style={styles.settingsItem}
+        onPress={() => router.push('/HelpScreen')}
+      >
+        <View style={[styles.iconPlaceholder, styles.helpIcon]}>
+          <Text style={styles.iconText}>❓</Text>
+        </View>
+        <Text style={styles.settingsLabel}>{t.profile.helpSupport}</Text>
+        <View style={styles.arrowPlaceholder}>
+          <Text style={styles.arrowText}>›</Text>
+        </View>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any, isDark: boolean) => StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: '#fff' 
+    backgroundColor: colors.background
   },
   contentContainer: { 
     paddingBottom: 30 
@@ -108,87 +139,103 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center', // ცენტრირება
     paddingTop: 50,
     paddingBottom: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
+    position: 'relative',
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111116',
+    color: colors.text,
     textAlign: 'center',
-    flex: 1,
   },
   settingsIconButton: {
+    position: 'absolute',
+    right: 16,
     padding: 8,
     borderRadius: 20,
-    backgroundColor: '#f8f6f3',
+    backgroundColor: colors.surface,
   },
   settingsIcon: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#f2eff4',
+    backgroundColor: colors.card,
     alignItems: 'center',
     justifyContent: 'center',
   },
   settingsIconText: {
     fontSize: 16,
-    color: '#666',
+    color: colors.textSecondary,
   },
   profileInfo: {
     alignItems: 'center',
     marginTop: 24,
     marginBottom: 16,
   },
+  avatarContainer: {
+    marginBottom: 12,
+  },
   avatar: {
     width: 128,
     height: 128,
     borderRadius: 64,
-    backgroundColor: '#e0d7f7',
-    marginBottom: 12,
+    backgroundColor: colors.primary + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: colors.primary + '30',
+  },
+  avatarPlaceholder: {
+    fontSize: 48,
+    color: colors.primary,
   },
   name: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#111116',
+    color: colors.text,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6b6387',
+    color: colors.textSecondary,
     marginBottom: 2,
   },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: 24,
+    marginHorizontal: 20,
     marginBottom: 24,
     gap: 12,
   },
   statBox: {
     flex: 1,
-    minWidth: 111,
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 12,
+    padding: 16,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#dddbe5',
-    marginHorizontal: 4,
-    backgroundColor: '#fff',
+    borderColor: colors.border,
+    backgroundColor: colors.card,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   statNumber: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#111116',
+    color: colors.primary,
     marginBottom: 4,
   },
   statLabel: {
-    fontSize: 14,
-    color: '#6b6387',
+    fontSize: 12,
+    color: colors.textSecondary,
     textAlign: 'center',
+    fontWeight: '500',
   },
   sectionHeader: {
     paddingHorizontal: 16,
@@ -198,39 +245,60 @@ const styles = StyleSheet.create({
   sectionHeaderText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111116',
+    color: colors.text,
   },
   settingsItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    height: 56,
-    backgroundColor: '#fff',
+    height: 64,
+    backgroundColor: colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#f2eff4',
+    borderBottomColor: colors.border,
+    marginHorizontal: 16,
+    marginVertical: 4,
+    borderRadius: 12,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   iconPlaceholder: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: '#f2eff4',
+    width: 44,
+    height: 44,
+    borderRadius: 12,
     marginRight: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notificationIcon: {
+    backgroundColor: colors.primary + '20',
+  },
+  accountIcon: {
+    backgroundColor: colors.success + '20',
+  },
+  helpIcon: {
+    backgroundColor: colors.warning + '20',
+  },
+  iconText: {
+    fontSize: 20,
   },
   settingsLabel: {
     flex: 1,
     fontSize: 16,
-    color: '#111116',
-  },
-  switchPlaceholder: {
-    width: 50,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#f2eff4',
+    color: colors.text,
+    fontWeight: '500',
   },
   arrowPlaceholder: {
     width: 24,
     height: 24,
-    borderRadius: 12,
-    backgroundColor: '#f2eff4',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  arrowText: {
+    fontSize: 20,
+    color: colors.textSecondary,
+    fontWeight: 'bold',
   },
 });

@@ -1,148 +1,320 @@
+// app/AppPreferencesScreen.tsx
 import React, { useState } from 'react';
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
 import { useLanguage } from './LanguageContext';
 import { useTheme } from './ThemeContext';
-import { translations } from './translations';
+
+// translations ობიექტი
+const translations = {
+  en: {
+    appPreferences: 'App Preferences',
+    darkMode: 'Dark Mode',
+    fontSize: 'Font Size',
+    language: 'Language',
+    english: 'English',
+    georgian: 'Georgian',
+    back: 'Back',
+  },
+  ka: {
+    appPreferences: 'აპის პარამეტრები',
+    darkMode: 'მუქი თემა',
+    fontSize: 'ტექსტის ზომა',
+    language: 'ენა',
+    english: 'English',
+    georgian: 'ქართული',
+    back: 'უკან',
+  },
+};
 
 export default function AppPreferencesScreen() {
+  const router = useRouter();
   const { isDark, setIsDark } = useTheme();
   const { language, setLanguage } = useLanguage();
   const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium');
 
+  // Safe access to translations
+  const currentTranslations = translations[language as keyof typeof translations] || translations.en;
+
+  // Theme Toggle Handler
+  const handleThemeToggle = (value: boolean) => {
+    console.log('Theme toggle pressed:', value);
+    setIsDark(value);
+  };
+
+  // Language Change Handler
+  const handleLanguageChange = (newLanguage: 'en' | 'ka') => {
+    console.log('Language change pressed:', newLanguage);
+    setLanguage(newLanguage);
+  };
+
+  // Font Size Change Handler
+  const handleFontSizeChange = (size: 'small' | 'medium' | 'large') => {
+    console.log('Font size changed:', size);
+    setFontSize(size);
+  };
+
+  // Dynamic styles based on theme
+  const containerStyle = [
+    styles.container,
+    { backgroundColor: isDark ? '#1a1a1a' : '#f8f9fa' }
+  ];
+
+  const headerStyle = [
+    styles.header,
+    { color: isDark ? '#ffffff' : '#8b5fbf' }
+  ];
+
+  const labelStyle = [
+    styles.label,
+    { color: isDark ? '#ffffff' : '#2c2c2c' }
+  ];
+
+  const cardStyle = [
+    styles.card,
+    { 
+      backgroundColor: isDark ? '#2c2c2c' : '#ffffff',
+      shadowColor: isDark ? '#000' : '#8b5fbf',
+    }
+  ];
+
+  const backButtonStyle = [
+    styles.backButton,
+    { backgroundColor: isDark ? '#2c2c2c' : '#ffffff' }
+  ];
+
+  const backButtonTextStyle = [
+    styles.backButtonText,
+    { color: isDark ? '#ffffff' : '#8b5fbf' }
+  ];
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>{translations[language].appPreferences}</Text>
+    <>
+      {/* Expo Router Stack Screen configuration */}
+      <Stack.Screen 
+        options={{ 
+          headerShown: false,
+          title: currentTranslations.appPreferences 
+        }} 
+      />
+      
+      <View style={containerStyle}>
+        {/* Custom Back Button */}
+        <TouchableOpacity 
+          style={backButtonStyle}
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+        >
+          <Text style={backButtonTextStyle}>← {currentTranslations.back}</Text>
+        </TouchableOpacity>
 
-      {/* Theme Switch */}
-      <View style={styles.row}>
-        <Text style={styles.label}>{translations[language].darkMode}</Text>
-        <Switch
-          value={isDark}
-          onValueChange={setIsDark}
-          thumbColor={isDark ? '#8b5fbf' : '#fff'}
-          trackColor={{ false: '#dddbe5', true: '#8b5fbf' }}
-        />
-      </View>
+        <Text style={headerStyle}>{currentTranslations.appPreferences}</Text>
 
-      {/* Font Size */}
-      <View style={styles.row}>
-        <Text style={styles.label}>{translations[language].fontSize}</Text>
-        <View style={styles.fontSizeGroup}>
-          <TouchableOpacity
-            style={[
-              styles.fontSizeButton,
-              fontSize === 'small' && styles.fontSizeButtonActive,
-            ]}
-            onPress={() => setFontSize('small')}
-          >
-            <Text style={styles.fontSizeText}>A</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.fontSizeButton,
-              fontSize === 'medium' && styles.fontSizeButtonActive,
-            ]}
-            onPress={() => setFontSize('medium')}
-          >
-            <Text style={[styles.fontSizeText, { fontSize: 18 }]}>A</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.fontSizeButton,
-              fontSize === 'large' && styles.fontSizeButtonActive,
-            ]}
-            onPress={() => setFontSize('large')}
-          >
-            <Text style={[styles.fontSizeText, { fontSize: 22 }]}>A</Text>
-          </TouchableOpacity>
+        {/* Theme Switch Card */}
+        <View style={[cardStyle, styles.row]}>
+          <Text style={labelStyle}>{currentTranslations.darkMode}</Text>
+          <Switch
+            value={isDark}
+            onValueChange={handleThemeToggle}
+            thumbColor={isDark ? '#8b5fbf' : '#ffffff'}
+            trackColor={{ false: '#dddbe5', true: '#8b5fbf' }}
+            ios_backgroundColor="#dddbe5"
+          />
+        </View>
+
+        {/* Font Size Card */}
+        <View style={cardStyle}>
+          <Text style={[labelStyle, styles.sectionTitle]}>{currentTranslations.fontSize}</Text>
+          <View style={styles.fontSizeGroup}>
+            <TouchableOpacity
+              style={[
+                styles.fontSizeButton,
+                { backgroundColor: isDark ? '#1a1a1a' : '#f2eff4' },
+                fontSize === 'small' && styles.fontSizeButtonActive,
+              ]}
+              onPress={() => handleFontSizeChange('small')}
+              activeOpacity={0.7}
+            >
+              <Text style={[
+                styles.fontSizeText,
+                { color: isDark ? '#ffffff' : '#2c2c2c' },
+                fontSize === 'small' && { color: '#ffffff' }
+              ]}>A</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.fontSizeButton,
+                { backgroundColor: isDark ? '#1a1a1a' : '#f2eff4' },
+                fontSize === 'medium' && styles.fontSizeButtonActive,
+              ]}
+              onPress={() => handleFontSizeChange('medium')}
+              activeOpacity={0.7}
+            >
+              <Text style={[
+                styles.fontSizeText,
+                { fontSize: 18, color: isDark ? '#ffffff' : '#2c2c2c' },
+                fontSize === 'medium' && { color: '#ffffff' }
+              ]}>A</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.fontSizeButton,
+                { backgroundColor: isDark ? '#1a1a1a' : '#f2eff4' },
+                fontSize === 'large' && styles.fontSizeButtonActive,
+              ]}
+              onPress={() => handleFontSizeChange('large')}
+              activeOpacity={0.7}
+            >
+              <Text style={[
+                styles.fontSizeText,
+                { fontSize: 22, color: isDark ? '#ffffff' : '#2c2c2c' },
+                fontSize === 'large' && { color: '#ffffff' }
+              ]}>A</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Language Card */}
+        <View style={cardStyle}>
+          <Text style={[labelStyle, styles.sectionTitle]}>{currentTranslations.language}</Text>
+          <View style={styles.languageGroup}>
+            <TouchableOpacity
+              style={[
+                styles.languageButton,
+                { backgroundColor: isDark ? '#1a1a1a' : '#f2eff4' },
+                language === 'en' && styles.languageButtonActive,
+              ]}
+              onPress={() => handleLanguageChange('en')}
+              activeOpacity={0.7}
+            >
+              <Text style={[
+                styles.languageText,
+                { color: isDark ? '#ffffff' : '#2c2c2c' },
+                language === 'en' && { color: '#ffffff' }
+              ]}>{currentTranslations.english}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.languageButton,
+                { backgroundColor: isDark ? '#1a1a1a' : '#f2eff4' },
+                language === 'ka' && styles.languageButtonActive,
+              ]}
+              onPress={() => handleLanguageChange('ka')}
+              activeOpacity={0.7}
+            >
+              <Text style={[
+                styles.languageText,
+                { color: isDark ? '#ffffff' : '#2c2c2c' },
+                language === 'ka' && { color: '#ffffff' }
+              ]}>{currentTranslations.georgian}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Debug Info */}
+        <View style={[cardStyle, { marginTop: 20 }]}>
+          <Text style={[labelStyle, { fontSize: 12, opacity: 0.7 }]}>
+            Debug: Theme={isDark ? 'Dark' : 'Light'}, Language={language}
+          </Text>
         </View>
       </View>
-
-      {/* Language */}
-      <View style={styles.row}>
-        <Text style={styles.label}>{translations[language].language}</Text>
-        <View style={styles.languageGroup}>
-          <TouchableOpacity
-            style={[
-              styles.languageButton,
-              language === 'en' && styles.languageButtonActive,
-            ]}
-            onPress={() => setLanguage('en')}
-          >
-            <Text style={styles.languageText}>{translations[language].english}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.languageButton,
-              language === 'ka' && styles.languageButtonActive,
-            ]}
-            onPress={() => setLanguage('ka')}
-          >
-            <Text style={styles.languageText}>{translations[language].georgian}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 24 },
+  container: { 
+    flex: 1, 
+    padding: 20,
+    paddingTop: 50, // Safe area-ისთვის
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginBottom: 20,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  backButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
   header: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#8b5fbf',
     marginBottom: 32,
     textAlign: 'center',
+  },
+  card: {
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 32,
     justifyContent: 'space-between',
+  },
+  sectionTitle: {
+    marginBottom: 16,
   },
   label: {
     fontSize: 18,
-    color: '#2c2c2c',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   fontSizeGroup: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'center',
+    gap: 12,
   },
   fontSizeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#f2eff4',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 4,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   fontSizeButtonActive: {
     backgroundColor: '#8b5fbf',
+    borderColor: '#8b5fbf',
   },
   fontSizeText: {
-    fontSize: 14,
-    color: '#2c2c2c',
+    fontSize: 16,
     fontWeight: 'bold',
   },
   languageGroup: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'center',
+    gap: 12,
   },
   languageButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 16,
-    backgroundColor: '#f2eff4',
-    marginHorizontal: 4,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 25,
+    minWidth: 100,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   languageButtonActive: {
     backgroundColor: '#8b5fbf',
+    borderColor: '#8b5fbf',
   },
   languageText: {
-    color: '#2c2c2c',
-    fontWeight: '500',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });

@@ -1,10 +1,14 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+// app/_layout.tsx - მთავარი layout ფაილი
+import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+// შენი custom provider-ები - პირდაპირ app ფოლდერიდან
+import { ThemeProvider } from './ThemeContext';
+import { LanguageProvider } from './LanguageContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -13,17 +17,24 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+    // შენი custom provider-ები ყველაზე გარედან
+    <ThemeProvider>
+      <LanguageProvider>
+        {/* Navigation theme provider შიგნით */}
+        <NavigationThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="ProfileScreen" options={{ headerShown: false }} />
+            <Stack.Screen name="AppPreferencesScreen" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </NavigationThemeProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }
