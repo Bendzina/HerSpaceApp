@@ -1,12 +1,9 @@
-// app/_layout.tsx - მთავარი layout ფაილი
-import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-// შენი custom provider-ები - პირდაპირ app ფოლდერიდან
 import { ThemeProvider } from './ThemeContext';
 import { LanguageProvider } from './LanguageContext';
 
@@ -16,24 +13,18 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return null;
 
   return (
-    // შენი custom provider-ები ყველაზე გარედან
     <ThemeProvider>
       <LanguageProvider>
-        {/* Navigation theme provider შიგნით */}
-        <NavigationThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="ProfileScreen" options={{ headerShown: false }} />
-            <Stack.Screen name="AppPreferencesScreen" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </NavigationThemeProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="ProfileScreen" />
+          <Stack.Screen name="AppPreferencesScreen" />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       </LanguageProvider>
     </ThemeProvider>
   );

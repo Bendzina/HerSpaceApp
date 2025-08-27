@@ -66,10 +66,10 @@ export default function WelcomeScreen() {
       {/* Settings Button */}
       <TouchableOpacity 
         style={settingsButtonStyle}
-        onPress={() => router.push('/AppPreferencesScreen')}
+        onPress={() => router.push('/SettingsScreen')}
         activeOpacity={0.7}
       >
-        <Text style={settingsTextStyle}>⚙️ {currentTranslations.settings}</Text>
+        <Text style={settingsTextStyle}>⚙️ </Text>
       </TouchableOpacity>
 
       {/* Illustration Area */}
@@ -111,7 +111,7 @@ export default function WelcomeScreen() {
       <View style={styles.buttonSection}>
         <TouchableOpacity
           style={styles.getStartedButton}
-          onPress={() => router.push('/ProfileScreen')}
+          onPress={() => router.push('./FocusScreen')}
         >
           <Text style={styles.getStartedText}>{currentTranslations.getStarted}</Text>
         </TouchableOpacity>
