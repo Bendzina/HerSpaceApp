@@ -13,6 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../ThemeContext';
 import { useLanguage } from '../LanguageContext';
+import { aiService } from '../services/aiService';
 
 interface Message {
   id: string;
@@ -28,71 +29,99 @@ export default function DagiAIScreen() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text:
-        language === 'ka'
-          ? 'გამარჯობა! მე ვარ Dagi, შენი AI ასისტენტი მენტალური კეთილდღეობისთვის. როგორ შემიძლია დაგეხმარო დღეს? 🌟'
-          : 'Hello! I’m Dagi, your AI assistant for mental well-being. How can I support you today? 🌟',
+      text: t.ai.welcome,
       isUser: false,
       timestamp: new Date(),
     },
   ]);
+  
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (inputText.trim() === '') return;
 
-    const newMessage: Message = {
+    const userMessage: Message = {
       id: Date.now().toString(),
       text: inputText.trim(),
       isUser: true,
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, newMessage]);
+    setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputText.trim();
     setInputText('');
     setIsTyping(true);
 
-    // Simulated AI response
-    setTimeout(() => {
-      const responses =
-        language === 'ka'
-          ? [
-              'ეს საინტერესო კითხვაა! მოდი უფრო ღრმად ჩავხედოთ...',
-              'შეიძლება დაგეხმაროს თუ დღიურის წერა სცადო ✨',
-              'გესმის, ეს ნამდვილად მნიშვნელოვანია შენი კეთილდღეობისთვის',
-              'დარწმუნებული ვარ ერთად ვიპოვით გზას! 💜',
-            ]
-          : [
-              'That’s an interesting question! Let’s explore it more deeply...',
-              'Maybe journaling could help you ✨',
-              'I hear you, that’s really important for your well-being',
-              'I’m sure we can find a way forward together! 💜',
-            ];
+    try {
+      const aiResponseText = await aiService.sendMessage(
+        [{ role: 'user', content: currentInput }],
+        language
+      );
 
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: responses[Math.floor(Math.random() * responses.length)],
+        text: aiResponseText,
         isUser: false,
         timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, aiResponse]);
+    } catch {
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: language === 'ka'
+          ? 'უკაცრავად, ახლა ვერ ვუპასუხებ 🙏'
+          : 'Sorry, I cannot respond right now 🙏',
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
 
-    // Scroll down after sending
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    }, 100);
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString(language === 'ka' ? 'ka-GE' : 'en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  // 🌟 Tarot draw
+  const drawTarot = async () => {
+    setIsTyping(true);
+
+    const tarotPrompt = language === 'ka'
+      ? "გააკეთე ერთი ტაროს კარტის გაშლა და განმარტება ქართულად, თბილად და მხარდამჭერი ტონით."
+      : "Draw one tarot card and give a warm, supportive interpretation in English.";
+
+    try {
+      const aiResponseText = await aiService.sendMessage(
+        [{ role: 'user', content: tarotPrompt }],
+        language
+      );
+
+      const aiResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: aiResponseText,
+        isUser: false,
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, aiResponse]);
+    } catch {
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: language === 'ka'
+          ? 'ტაროს კარტის გაშლა ვერ მოხერხდა 🙏'
+          : 'Tarot draw failed 🙏',
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsTyping(false);
+    }
+
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
   return (
@@ -112,6 +141,16 @@ export default function DagiAIScreen() {
         </View>
       </View>
 
+      {/* Actions Bar */}
+      <View style={[styles.actionsBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionsContent}>
+          <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.background }]} onPress={drawTarot}>
+            <Ionicons name="sparkles" size={16} color={colors.primary} />
+            <Text style={[styles.actionText, { color: colors.text }]}>{t.ai.tarot}</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+
       {/* Messages */}
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flex}>
         <ScrollView
@@ -120,33 +159,21 @@ export default function DagiAIScreen() {
           showsVerticalScrollIndicator={false}
           onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
         >
-          {messages.map(message => (
-            <View
-              key={message.id}
-              style={[styles.messageContainer, message.isUser ? styles.userMessage : styles.aiMessage]}
-            >
-              <View
-                style={[
-                  styles.messageBubble,
-                  message.isUser ? { backgroundColor: colors.primary } : { backgroundColor: colors.surface },
-                ]}
-              >
-                <Text style={[styles.messageText, { color: message.isUser ? '#FFF' : colors.text }]}>
-                  {message.text}
-                </Text>
+          {messages.map((message: Message) => (
+            <View key={message.id} style={[styles.messageContainer, message.isUser ? styles.userMessage : styles.aiMessage]}>
+              <View style={[
+                styles.messageBubble,
+                message.isUser ? { backgroundColor: colors.primary } : { backgroundColor: colors.surface },
+              ]}>
+                <Text style={[styles.messageText, { color: message.isUser ? '#FFF' : colors.text }]}>{message.text}</Text>
               </View>
-              <Text style={[styles.messageTime, { color: colors.textSecondary }]}>
-                {formatTime(message.timestamp)}
-              </Text>
             </View>
           ))}
 
           {isTyping && (
             <View style={[styles.messageContainer, styles.aiMessage]}>
               <View style={[styles.messageBubble, { backgroundColor: colors.surface }]}>
-                <Text style={[styles.typingText, { color: colors.textSecondary }]}>
-                  {language === 'ka' ? 'Dagi წერს...' : 'Dagi is typing...'}
-                </Text>
+                <Text style={[styles.typingText, { color: colors.textSecondary }]}>{t.ai.typing}</Text>
               </View>
             </View>
           )}
@@ -162,12 +189,11 @@ export default function DagiAIScreen() {
               placeholder={language === 'ka' ? 'მითხარი რა გაწუხებს...' : 'Type your question...'}
               placeholderTextColor={colors.textSecondary}
               multiline
-              maxLength={500}
             />
             <TouchableOpacity
-              style={[styles.sendButton, { backgroundColor: colors.primary }]}
+              style={[styles.sendButton, { backgroundColor: colors.primary, opacity: isTyping ? 0.5 : 1 }]}
               onPress={sendMessage}
-              disabled={inputText.trim() === ''}
+              disabled={inputText.trim() === '' || isTyping}
             >
               <Ionicons name="send" size={20} color="#FFF" />
             </TouchableOpacity>
@@ -188,13 +214,16 @@ const styles = StyleSheet.create({
   headerInfo: { flex: 1 },
   headerTitle: { fontSize: 18, fontWeight: '600' },
   headerSubtitle: { fontSize: 14, marginTop: 2 },
+  actionsBar: { paddingVertical: 12, borderBottomWidth: 1 },
+  actionsContent: { paddingHorizontal: 16, gap: 8 },
+  actionButton: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, marginRight: 8 },
+  actionText: { fontSize: 14, marginLeft: 6, fontWeight: '500' },
   messagesContainer: { flex: 1, paddingHorizontal: 16 },
   messageContainer: { marginVertical: 4 },
   userMessage: { alignItems: 'flex-end' },
   aiMessage: { alignItems: 'flex-start' },
   messageBubble: { maxWidth: '80%', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 20 },
   messageText: { fontSize: 16, lineHeight: 22 },
-  messageTime: { fontSize: 12, marginTop: 4, marginHorizontal: 8 },
   typingText: { fontSize: 14, fontStyle: 'italic' },
   inputContainer: { paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: 1 },
   inputWrapper: { flexDirection: 'row', alignItems: 'flex-end', borderRadius: 25, paddingHorizontal: 16, paddingVertical: 8, minHeight: 50 },

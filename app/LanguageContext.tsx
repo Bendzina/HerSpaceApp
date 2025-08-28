@@ -5,6 +5,11 @@ type Language = 'en' | 'ka';
 
 // English translations
 const enTranslations = {
+  ai: {
+    welcome: "Hello! I'm Dagi, your AI assistant for mental well-being. How can I support you today? 🌟",
+    typing: "Dagi is typing...",
+    tarot: "Draw Tarot",
+  },
   profile: {
     title: 'Profile',
     userName: 'Sophia Carter',
@@ -115,6 +120,11 @@ const enTranslations = {
 
 // Georgian translations
 const kaTranslations = {
+  ai: {
+    welcome: "გამარჯობა! მე ვარ Dagi, შენი AI ასისტენტი მენტალური კეთილდღეობისთვის. როგორ შემიძლია დაგეხმარო დღეს? 🌟",
+    typing: "Dagi წერს...",
+    tarot: "ტაროს გაშლა",
+  },
   profile: {
     title: 'პროფილი',
     userName: 'სოფია კარტერი',
