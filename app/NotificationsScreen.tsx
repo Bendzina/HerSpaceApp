@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Text, View, ScrollView, StyleSheet, TouchableOpacity, Switch, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useTheme } from '../ThemeContext';
-import { useLanguage } from '../LanguageContext';
+import { useTheme } from './ThemeContext';
+import { useLanguage } from './LanguageContext';
 
 export default function NotificationsScreen() {
   const router = useRouter();

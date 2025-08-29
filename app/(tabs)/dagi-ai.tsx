@@ -13,7 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../ThemeContext';
 import { useLanguage } from '../LanguageContext';
-import { aiService } from '../services/aiService';
+import { aiService } from '../../services/aiService';
 
 interface Message {
   id: string;

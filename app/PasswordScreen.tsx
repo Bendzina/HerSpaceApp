@@ -9,8 +9,8 @@ import {
   Alert 
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useTheme } from '../ThemeContext';
-import { useLanguage } from '../LanguageContext';
+import { useTheme } from './ThemeContext';
+import { useLanguage } from './LanguageContext';
 
 export default function PasswordScreen() {
   const router = useRouter();

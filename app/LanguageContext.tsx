@@ -296,3 +296,4 @@ export function useLanguage() {
   }
   return context;
 }
+export default LanguageProvider;

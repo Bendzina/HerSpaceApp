@@ -39,6 +39,7 @@ interface ThemeContextType {
   colors: typeof lightColors;
 }
 
+
 const ThemeContext = createContext<ThemeContextType>({
   isDark: false,
   setIsDark: () => {},
@@ -96,3 +97,4 @@ export function useTheme() {
   }
   return context;
 }
+export default ThemeProvider;

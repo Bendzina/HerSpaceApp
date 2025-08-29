@@ -2,8 +2,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useTheme } from './ThemeContext';
-import { useLanguage } from './LanguageContext';
+import { useLanguage } from '../LanguageContext';
+import { useTheme } from '../ThemeContext';
 
 export default function ProfileScreen() {
   const [image, setImage] = useState<string | null>(null);
