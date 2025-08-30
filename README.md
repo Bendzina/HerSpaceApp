@@ -48,3 +48,58 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+1. Base Setup (what you already did ✅)
+Navigation (tabs + stack)
+Theme / Language context
+Welcome screen (with animation)
+Settings screen (dark mode, language toggle)
+Dagi AI Chat UI
+2. Authentication Flow (next big step)
+ Login & Register screens (email/password)
+ JWT auth integration with backend (/auth/login/, /auth/register/)
+ Store tokens in AsyncStorage
+ Auto-redirect unauthenticated → Welcome/Login
+ Token refresh flow
+👉 ამის მერე შეძლებ backend–თან ყველა endpoint–ის გამოყენებას.
+3. Core Features Integration
+📓 Journal
+ Create Entry (POST /journal/)
+ View Entries List (GET /journal/)
+ Single Entry View / Delete
+🎭 Mood
+ Mood picker (happy, sad, neutral, etc)
+ POST to /moods/
+ Mood history chart (GET /moods/)
+🔮 Ritual Library
+ List rituals (GET /rituals/)
+ Ritual detail (GET /rituals/:id)
+ Mark ritual as completed (POST /rituals/complete/)
+4. Progress & Profile
+ Progress screen with stats (streak, completed rituals, journal count, moods)
+ Charts (maybe react-native-svg-charts or VictoryNative)
+ Profile screen (username, joined date, settings shortcut)
+5. Community (Phase 2 🌸)
+ეს დამატებითია, მაგრამ ძლიერი ღერძი გახდება:
+ Community feed (posts from users → /community/posts/)
+ Post detail (likes, comments)
+ Create post (text + optional image)
+ Simple chat or groups (optional first version → only comments under posts)
+👉 შეგიძლია დაიწყოს ძალიან მარტივად, როგორც journaling–ის საჯარო ვერსია.
+მაგალითად:
+შენი journal entry → შეგიძლია share–ად community feed–ში.
+სხვები მხოლოდ “💜 react” და კომენტარს აკეთებენ.
+6. Polish & Experience
+ Lottie animations (welcome, rituals complete, mood selected)
+ Push notifications (reminders for journal, meditation)
+ App icons & branding (HerSpace theme 💜)
+ Final onboarding flow (“What is your focus?” screen)
+🌟 MVP Checklist (before community):
+Auth ✅
+Journal ✅
+Mood ✅
+Rituals ✅
+Profile/Progress ✅
+Dagi AI ✅
+ამის მერე community ჩასვავ როგორც “bonus wow factor” 🚀
