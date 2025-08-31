@@ -8,14 +8,16 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { register } from "../services/authService";
 import { useTheme } from "./ThemeContext";
 import { useLanguage } from "./LanguageContext";
+import { useAuth } from "../context/AuthContext";  // ✅ აქედან გამოვიყენებთ register-ს
 
 export default function RegisterScreen() {
   const { colors } = useTheme();
   const { language } = useLanguage();
   const router = useRouter();
+
+  const { register } = useAuth(); // ✅ hook აქ უნდა გამოიძახო
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -33,7 +35,7 @@ export default function RegisterScreen() {
 
     try {
       setLoading(true);
-      await register(username, email, password);
+      await register(username, email, password); // ✅ უკვე Context-ის register-ს იყენებს
 
       Alert.alert(
         language === "ka" ? "წარმატება" : "Success",

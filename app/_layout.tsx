@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AuthProvider } from '../context/AuthContext';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemeProvider } from './ThemeContext';
@@ -20,17 +21,18 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <SafeAreaProvider>
-          {/* NavigationContainer აღარ გვჭირდება — Expo Router თვითონ მართავს */}
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-            {/* <Stack.Screen name="ProfileScreen" /> */}
-            <Stack.Screen name="AppPreferencesScreen" />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        </SafeAreaProvider>
+        <AuthProvider>   
+          <SafeAreaProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="AppPreferencesScreen" />
+              <Stack.Screen name="LoginScreen" />
+              <Stack.Screen name="RegisterScreen" />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+          </SafeAreaProvider>
+        </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>
   );
