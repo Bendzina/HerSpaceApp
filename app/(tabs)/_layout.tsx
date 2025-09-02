@@ -47,11 +47,29 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="mindful"
+        name="journal"
         options={{
-          title: 'Mindful',
+          title: 'Journal',
           tabBarIcon: ({ color }) => (
-            <Ionicons name="flower" size={22} color={color} />
+            <Ionicons name="book" size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="mood"
+        options={{
+          title: 'Mood',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="happy" size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person" size={22} color={color} />
           ),
         }}
       />
@@ -61,15 +79,6 @@ export default function TabLayout() {
           title: 'Dagi AI',
           tabBarIcon: ({ color }) => (
             <Ionicons name="chatbubble-ellipses" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="progress"
-        options={{
-          title: 'Progress',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="trending-up" size={22} color={color} />
           ),
         }}
       />

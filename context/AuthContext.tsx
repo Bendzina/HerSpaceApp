@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as authService from "../services/authService";
+import { onAuthFailure } from "../services/authService";
 
 interface User {
   id: number;
@@ -134,6 +135,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('AuthContext: Logout error:', error);
     }
   };
+
+  // Auto-logout if refresh token becomes invalid (emitted by authService)
+  useEffect(() => {
+    const unsubscribe = onAuthFailure(async () => {
+      console.log('AuthContext: Auto-logout due to auth failure');
+      await logout();
+    });
+    return () => { unsubscribe(); };
+  }, [logout]);
 
   const value = {
     user,

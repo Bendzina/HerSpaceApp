@@ -1,10 +1,10 @@
-import React from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from 'expo-router';
 import LottieView from 'lottie-react-native';
-import { useTheme } from '../ThemeContext';
+import React from 'react';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useLanguage } from '../LanguageContext';
-import { useAuth } from "@/context/AuthContext";
+import { useTheme } from '../ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -82,7 +82,7 @@ export default function WelcomeScreen() {
           <View style={{ flexDirection: 'row', marginTop: 15 }}>
             <TouchableOpacity 
               style={[styles.authButton, { backgroundColor: '#8b5fbf' }]}
-              onPress={() => router.push('/ProfileScreen')}
+              onPress={() => router.push('/(tabs)/profile')}
             >
               <Text style={{ color: '#fff', fontWeight: '600' }}>{t.myProfile}</Text>
             </TouchableOpacity>
