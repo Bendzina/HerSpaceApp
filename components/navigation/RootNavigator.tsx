@@ -6,8 +6,8 @@
  */
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import WelcomeScreen from './index';
-import ProfileScreen from './ProfileScreen';
+import WelcomeScreen from '../../app/(tabs)/index';
+import ProfileScreen from '../../app/(tabs)/ProfileScreen';
 
 const Stack = createStackNavigator();
 

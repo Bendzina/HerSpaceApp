@@ -82,7 +82,7 @@ export default function WelcomeScreen() {
           <View style={{ flexDirection: 'row', marginTop: 15 }}>
             <TouchableOpacity 
               style={[styles.authButton, { backgroundColor: '#8b5fbf' }]}
-              onPress={() => router.push('/(tabs)/profile')}
+              onPress={() => router.push('/profile')}
             >
               <Text style={{ color: '#fff', fontWeight: '600' }}>{t.myProfile}</Text>
             </TouchableOpacity>

@@ -9,8 +9,8 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../ThemeContext';
-import { useLanguage } from '../LanguageContext';
+import { useTheme } from './ThemeContext';
+import { useLanguage } from './LanguageContext';
 
 const { width } = Dimensions.get('window');
 
