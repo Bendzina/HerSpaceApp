@@ -46,6 +46,15 @@ export default function TabLayout() {
             <Ionicons name="menu" size={22} color={colors.text} />
           </TouchableOpacity>
         ),
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => navigation.getParent()?.navigate('SettingsScreen')}
+            style={{ paddingHorizontal: 12 }}
+            accessibilityLabel="Open settings"
+          >
+            <Ionicons name="settings" size={22} color={colors.text} />
+          </TouchableOpacity>
+        ),
       })}
     >
       <Tabs.Screen
@@ -69,6 +78,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="journal"
         options={{
+          headerShown: false,
           title: 'Journal',
           tabBarIcon: ({ color }) => (
             <Ionicons name="book" size={22} color={color} />
@@ -84,6 +94,7 @@ export default function TabLayout() {
           ),
         }}
       />
+      {/* Mood tab removed: Flow goes Home -> FocusScreen -> MoodScreen, no direct tab */}
       <Tabs.Screen
         name="progress"
         options={{

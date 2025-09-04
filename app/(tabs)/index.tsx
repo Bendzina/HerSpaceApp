@@ -2,7 +2,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import React from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLanguage } from '../LanguageContext';
 import { useTheme } from '../ThemeContext';
 
@@ -35,6 +36,7 @@ export default function WelcomeScreen() {
   const { language } = useLanguage();
   const { user, isAuthenticated, logout } = useAuth();
   const t = translations[language] || translations.en;
+  const insets = useSafeAreaInsets();
 
   const handleLogout = async () => {
     try {
@@ -45,17 +47,16 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#1a1a1a' : '#f8f6f3' }]}>
-      
-      {/* Settings Button */}
-      <TouchableOpacity
-        style={styles.settingsButton}
-        onPress={() => router.push('/SettingsScreen')}
-        activeOpacity={0.7}
+    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#1a1a1a' : '#f8f6f3' }]}>      
+      <ScrollView
+        contentContainerStyle={{
+          alignItems: 'center',
+          paddingHorizontal: 20,
+          paddingTop: 8,
+          paddingBottom: insets.bottom + 76, // keep clear of tab bar (60) + spacing
+        }}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={[styles.settingsText, { color: isDark ? '#fff' : '#8b5fbf' }]}>⚙️</Text>
-      </TouchableOpacity>
-
       {/* ✅ Conditional Auth Buttons */}
       {!isAuthenticated ? (
         <View style={{ flexDirection: 'row', marginTop: 20 }}>
@@ -82,7 +83,7 @@ export default function WelcomeScreen() {
           <View style={{ flexDirection: 'row', marginTop: 15 }}>
             <TouchableOpacity 
               style={[styles.authButton, { backgroundColor: '#8b5fbf' }]}
-              onPress={() => router.push('/profile')}
+              onPress={() => router.push('/(tabs)/ProfileScreen')}
             >
               <Text style={{ color: '#fff', fontWeight: '600' }}>{t.myProfile}</Text>
             </TouchableOpacity>
@@ -127,24 +128,15 @@ export default function WelcomeScreen() {
           <Text style={styles.getStartedText}>{t.getStarted}</Text>
         </TouchableOpacity>
       </View>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  container: { flex: 1, alignItems: 'center' },
   
-  settingsButton: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
-    zIndex: 10,
-    padding: 8,
-  },
-  settingsText: {
-    fontSize: 20,
-    fontWeight: '600',
-  },
+  // headerRight now shows settings button; no in-screen settings button needed
 
   // ✅ ახალი style დალოგინებული user-ისთვის
   userSection: {
@@ -158,13 +150,13 @@ const styles = StyleSheet.create({
   },
 
   animation: {
-    width: width * 0.9,
-    height: height * 0.5,
+    width: width * 0.85,
+    height: height * 0.42,
   },
   content: {
     alignItems: 'center',
-    paddingHorizontal: 30,
-    marginTop: -20,
+    paddingHorizontal: 16,
+    marginTop: 6,
   },
   title: {
     fontSize: 30,

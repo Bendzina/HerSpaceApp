@@ -27,6 +27,9 @@ const translations = {
       enterName: 'Enter your name',
       nameUpdated: 'Name updated successfully! ✨',
       updateError: 'Failed to update name. Please try again.',
+      errorTitle: 'Error',
+      successTitle: 'Success',
+      emptyName: 'Name cannot be empty',
     }
   },
   ka: {
@@ -49,6 +52,9 @@ const translations = {
       enterName: 'შეიყვანე შენი სახელი',
       nameUpdated: 'სახელი წარმატებით განახლდა! ✨',
       updateError: 'სახელის განახლება ვერ მოხერხდა. გთხოვ სცადე ხელახლა.',
+      errorTitle: 'შეცდომა',
+      successTitle: 'წარმატება',
+      emptyName: 'სახელი არ შეიძლება იყოს ცარიელი',
     }
   }
 };
@@ -68,7 +74,7 @@ export default function ProfileScreen() {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
     if (!permissionResult.granted) {
-      alert(t.profile.permissionRequired);
+      Alert.alert(t.profile.errorTitle, t.profile.permissionRequired);
       return;
     }
 
@@ -91,17 +97,17 @@ export default function ProfileScreen() {
 
   const handleSaveName = async () => {
     if (!tempName.trim()) {
-      Alert.alert('Error', 'Name cannot be empty');
+      Alert.alert(t.profile.errorTitle, t.profile.emptyName);
       return;
     }
 
     try {
       await updateUserProfile({ displayName: tempName.trim() });
       setIsEditingName(false);
-      Alert.alert('Success', t.profile.nameUpdated);
+      Alert.alert(t.profile.successTitle, t.profile.nameUpdated);
     } catch (error) {
       console.error('Failed to update name:', error);
-      Alert.alert('Error', t.profile.updateError);
+      Alert.alert(t.profile.errorTitle, t.profile.updateError);
     }
   };
 

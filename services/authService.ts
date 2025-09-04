@@ -89,6 +89,24 @@ async function fetchWithAuth(url: string, options: RequestInit, accessToken: str
   return response;
 }
 
+// Exported helper for other services to make authenticated API calls using the
+// same token/refresh logic. Pass API path starting with '/'.
+export async function authorizedFetch(path: string, options: RequestInit = {}) {
+  const token = await AsyncStorage.getItem('access_token');
+  if (!token) {
+    throw new Error('No access token found');
+  }
+  const url = path.startsWith('http') ? path : `${BASE_URL}${path}`;
+  try {
+    const resp = await fetchWithAuth(url, options, token);
+    try { console.log('authorizedFetch:', options.method || 'GET', url, '->', resp.status); } catch {}
+    return resp;
+  } catch (e) {
+    try { console.log('authorizedFetch error:', options.method || 'GET', url, e); } catch {}
+    throw e;
+  }
+}
+
 export async function login(username: string, password: string) {
   try {
     console.log('authService: Login attempt...', { username });

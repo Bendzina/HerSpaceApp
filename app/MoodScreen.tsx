@@ -9,6 +9,7 @@ import {
   Alert 
 } from "react-native";
 import { useRouter } from "expo-router";
+import { createMoodCheckIn } from "@/services/moodService";
 import { useTheme } from './ThemeContext';
 import { useLanguage } from './LanguageContext';
 
@@ -59,23 +60,31 @@ export default function MoodScreen() {
   const { language } = useLanguage();
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const currentTranslations = translations[language] || translations.en;
 
-  const handleSaveProgress = () => {
-    if (!selectedMood) {
-      Alert.alert('', currentTranslations.selectMoodFirst);
+  const handleSaveProgress = async () => {
+    if (!selectedMood || isSaving) {
+      if (!selectedMood) Alert.alert('', currentTranslations.selectMoodFirst);
       return;
     }
-    
-    // TODO: Implement actual saving to backend/storage
-    console.log('Saving mood:', selectedMood);
-    setIsSaved(true);
-    
-    Alert.alert('', currentTranslations.progressSaved);
-    
-    // Reset save status after 2 seconds
-    setTimeout(() => setIsSaved(false), 2000);
+    try {
+      setIsSaving(true);
+      await createMoodCheckIn({ mood: selectedMood });
+      setIsSaved(true);
+      Alert.alert('', currentTranslations.progressSaved);
+      setTimeout(() => setIsSaved(false), 2000);
+    } catch (e: any) {
+      const msg = String(e?.message || '');
+      if (msg.includes('already submitted') || msg.includes('already') || msg.includes('unique')) {
+        Alert.alert('', 'You have already submitted today\'s mood.');
+      } else {
+        Alert.alert('', msg || 'Failed to save mood');
+      }
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleContinue = () => {
@@ -201,7 +210,7 @@ export default function MoodScreen() {
             }
           ]}
           onPress={handleContinue}
-          disabled={!selectedMood}
+          disabled={!selectedMood || isSaving}
         >
           <Text style={styles.continueButtonText}>
             {currentTranslations.next}
